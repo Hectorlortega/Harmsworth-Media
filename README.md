@@ -77,8 +77,22 @@ for seven days. The configuration uses a 60-second default test timeout,
 10-second assertion timeout, 25-second navigation timeout and one CI retry.
 Some longer persistence tests override the test timeout to 120 seconds. GitHub-hosted
 runner IPs are not guaranteed to be in the UK; locale and timezone settings do
-not change the IP. Use a UK-hosted runner or approved UK egress if the sites'
-geolocation affects consent.
+not change the IP.
+
+In an investigated GitHub Actions run, nine tests failed because their expected
+consent overlay did not appear. The iNews consent provider identified that
+runner as being in the US, and New Scientist loaded US CCPA consent resources.
+This is strong evidence that the runner's location affected the consent journey,
+but the New Scientist cause has not been confirmed independently. The same
+suite passed locally; the CI failures should not be treated as passing tests.
+
+To run the intended UK journey in CI, a possible solution is an isolated runner
+with UK network egress. Its IP location must be verified with the sites, and the
+full suite rerun to confirm the result. Such infrastructure may have a cost and
+requires security safeguards, especially for public pull requests; GitHub
+[recommends self-hosted runners only for private repositories](https://docs.github.com/en/actions/how-tos/manage-runners/self-hosted-runners/add-runners).
+Until a suitable runner is available, run the tests locally from a UK network and
+use the CI report to investigate failures.
 
 For a failure, inspect the report, trace, screenshot and DOM snapshot, and
 compare them with a fresh manual visit in the same environment. A missing or
